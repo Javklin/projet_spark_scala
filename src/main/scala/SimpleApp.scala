@@ -10,6 +10,6 @@ object SimpleApp extends App {
     //val fichier_a_traiter = "./bookcorpus/books_large_p1.txt"
     //val fichier_a_traiter = "./bookcorpus/books_large_p2.txt"
     val fichier_a_traiter = "./bookcorpus/test.txt"
-    Pretraitement.pre_traiter(spark, fichier_a_traiter)
+    Pretraitement.creer_dataframe_frame(spark, fichier_a_traiter)
     spark.stop()
 }
