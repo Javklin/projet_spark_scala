@@ -5,12 +5,11 @@ import pretraitement._
 
 
 object SimpleApp extends App {
-    val logFile = "./README.md" // Should be some file on your system
     val spark = SparkSession.builder.appName("Simple Application").master("local[*]").getOrCreate()
-    val logData = spark.read.textFile(logFile).cache()
-    val numAs = logData.filter(line => line.contains("a")).count()
-    val numBs = logData.filter(line => line.contains("b")).count()
-    println(s"Lines with a: $numAs, Lines with b: $numBs")
-    Pretraitement.pre_traiter(spark, logFile)
+    //val fichier_a_traiter = "./README.md"
+    //val fichier_a_traiter = "./bookcorpus/books_large_p1.txt"
+    //val fichier_a_traiter = "./bookcorpus/books_large_p2.txt"
+    val fichier_a_traiter = "./bookcorpus/test.txt"
+    Pretraitement.pre_traiter(spark, fichier_a_traiter)
     spark.stop()
 }
