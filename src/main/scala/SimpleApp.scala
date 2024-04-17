@@ -2,6 +2,7 @@
 
 import org.apache.spark.sql.SparkSession
 import pretraitement._
+import analyse._
 
 
 object SimpleApp extends App {
@@ -10,6 +11,6 @@ object SimpleApp extends App {
     //val fichier_a_traiter = "./bookcorpus/books_large_p1.txt"
     //val fichier_a_traiter = "./bookcorpus/books_large_p2.txt"
     val fichier_a_traiter = "./bookcorpus/test.txt"
-    Pretraitement.creer_dataframe_frame(spark, fichier_a_traiter)
+    Pretraitement.normaliser_fichier(spark, fichier_a_traiter)
     spark.stop()
 }
