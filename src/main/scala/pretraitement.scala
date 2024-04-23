@@ -1,8 +1,10 @@
 package pretraitement
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame 
+import org.apache.spark.sql.functions._
 
 object  Pretraitement {
+
     // normalise un fichier et créer un dataframe qui contient sur chaque ligne le contenu d'un livre 
     def normaliser_fichier(spark: org.apache.spark.sql.SparkSession, chemin_fichier:  String ) :org.apache.spark.sql.DataFrame   = {
     val mon_fichier = spark.sparkContext.textFile(chemin_fichier)
@@ -24,7 +26,7 @@ object  Pretraitement {
     val separateurs = "(isbn|copyright \\d{4})"
     val texte_separe = texte_nettoye.split(separateurs)
     val df_livre = spark.createDataFrame(texte_separe.map(Tuple1.apply)).toDF("text")
-    //df_livre.show()
+    //df_livre.collect.foreach(println) // pour afficher chaque ligne dataframe 
     return df_livre
   }
 
