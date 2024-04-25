@@ -6,15 +6,15 @@ import org.apache.spark.sql.functions._
 object  Pretraitement {
 
     // normalise un fichier et créer un dataframe qui contient sur chaque ligne le contenu d'un livre 
-    def normaliser_fichier(spark: org.apache.spark.sql.SparkSession, chemin_fichier:  String ) :org.apache.spark.sql.DataFrame   = {
-    val mon_fichier = spark.sparkContext.textFile(chemin_fichier)
-    val texte_combine = mon_fichier.reduce(_ + " " + _)
+    def clean_file(spark: org.apache.spark.sql.SparkSession, chemin_fichier:  String ) :org.apache.spark.sql.DataFrame   = {
+    val file = spark.sparkContext.textFile(chemin_fichier)
+    val text_in_single_row = file.reduce(_ + " " + _)
     // on formatte le contenu du fichier
-    val texte_nettoye = texte_combine
+    val text_cleaned = text_in_single_row
       // on convertit tous en minuscule 
       .toLowerCase
-        // on supprime la ponctuation
-        .replaceAll("[^a-zA-Z0-9\\s]", "")
+        // on supprime la ponctuation sauf les points
+        .replaceAll("[^a-zA-Z0-9\\.\\!\\?\\s]", "")
         // on remplace les caractères accentues 
         .replaceAll("[àáâãäå]", "a")
         .replaceAll("[èéêë]", "e")
@@ -23,11 +23,12 @@ object  Pretraitement {
         .replaceAll("[ùúûü]", "u")
         .replaceAll("[ýÿ]", "y")
     // les sépareateurs des livres isbn et copyright XXXX
-    val separateurs = "(isbn|copyright \\d{4})"
-    val texte_separe = texte_nettoye.split(separateurs)
-    val df_livre = spark.createDataFrame(texte_separe.map(Tuple1.apply)).toDF("text")
-    //df_livre.collect.foreach(println) // pour afficher chaque ligne dataframe 
-    return df_livre
+    val separators = "(isbn|copyright \\d{4})"
+    val text_split = text_cleaned.split(separators)
+    //TODO supprimer les valeurs vides du dataframe fait
+    val df_book = spark.createDataFrame(text_split.map(Tuple1.apply)).toDF("book").na.drop()
+    //df_book.collect.foreach(println) // pour afficher chaque ligne du dataframe 
+    return df_book
   }
 
 }
