@@ -6,9 +6,10 @@ import org.apache.spark.sql.functions._
 object  Pretraitement {
 
     // normalise un fichier et créer un dataframe qui contient sur chaque ligne le contenu d'un livre 
-    def clean_file(spark: org.apache.spark.sql.SparkSession, chemin_fichier:  String ) :org.apache.spark.sql.DataFrame   = {
-    val file = spark.sparkContext.textFile(chemin_fichier)
-    val text_in_single_row = file.reduce(_ + " " + _)
+    def clean_file(spark: org.apache.spark.sql.SparkSession, file_path:  String ) :org.apache.spark.sql.DataFrame   = {
+    val file = spark.sparkContext.textFile(file_path)
+    //val text_in_single_row = file.reduce(_ + " " + _)
+    val text_in_single_row = file.take(1000).reduce(_ + " " + _)
     // on formatte le contenu du fichier
     val text_cleaned = text_in_single_row
       // on convertit tous en minuscule 

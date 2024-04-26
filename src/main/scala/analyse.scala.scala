@@ -41,7 +41,7 @@ def check_content(df: org.apache.spark.sql.DataFrame ) :Boolean = {
     val average_word_by_sentence = df_with_sentence_count
     .agg(sum("sentence_count")).count()
 
-     // la median de mot par phrase
+     // la mediane de mot par phrase
     val median_word_by_sentence = df_with_sentence_count.stat.approxQuantile("sentence_count", Array(0.5), 0.0)(0)
 
     println(s"Total number of words: $total_word_count *******************************************************************************")
