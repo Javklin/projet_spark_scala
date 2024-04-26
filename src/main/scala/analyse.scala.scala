@@ -11,7 +11,7 @@ def check_content(df: org.apache.spark.sql.DataFrame ) :Boolean = {
 
     //nb de mot
     val df_with_word_count = df.withColumn("word_count", size(array_remove(split(col("book"), "\\s+"), "")))
-    df_with_word_count.show(false)
+    df_with_word_count.show()
     val total_word_count = df_with_word_count.agg(sum("word_count")).collect()(0)(0)
     //println(s"Total number of words: $total_word_count *******************************************************************************")
 
@@ -20,7 +20,7 @@ def check_content(df: org.apache.spark.sql.DataFrame ) :Boolean = {
     text.split("[.!?]").count(_.trim.nonEmpty)
     })
     val df_with_sentence_count = df.withColumn("sentence_count", count_sentence_udf(col("book")))
-    df_with_sentence_count.show(false)
+    df_with_sentence_count.show()
     val totalSentenceCount = df_with_sentence_count.filter(trim(col("book")) =!= "").agg(sum("sentence_count")).collect()(0)(0)
     //println(s"Total number of sentences: $totalSentenceCount *******************************************************************************")
 
@@ -38,11 +38,10 @@ def check_content(df: org.apache.spark.sql.DataFrame ) :Boolean = {
     val different_word_number = distinct_word_count_df.count()
 
     // la moyenne de mot par phrase
-    val average_word_by_sentence = df_with_sentence_count
-    .agg(sum("sentence_count")).count()
+    val average_word_by_sentence=calculate_average_word_count_per_sentence(df, "book")
 
-     // la mediane de mot par phrase
-    val median_word_by_sentence = df_with_sentence_count.stat.approxQuantile("sentence_count", Array(0.5), 0.0)(0)
+    // la médiane de mot par phrase
+    val median_word_by_sentence = calculate_median_word_count_per_sentence(df, "book")
 
     println(s"Total number of words: $total_word_count *******************************************************************************")
     println(s"Total number of sentences: $totalSentenceCount *******************************************************************************")
@@ -54,6 +53,24 @@ def check_content(df: org.apache.spark.sql.DataFrame ) :Boolean = {
 }
 
 
+//pour le nombre de mot moyen par phrase
+val sentence_tokenizerUDF = udf((text: String) => text.split("[.!?]").map(_.trim))
+val count_wordsUDF = udf((sentence: String) => sentence.split("\\s+").length)
+def calculate_average_word_count_per_sentence(df: DataFrame, columnName: String): Double = {
+    val df_sentence = df.withColumn("sentences", explode(sentence_tokenizerUDF(col(columnName))))
+    val df_word = df_sentence.withColumn("word_count", count_wordsUDF(col("sentences")))
+    val df_word_by_sentence = df_word.agg(avg(col("word_count"))).head().getDouble(0)
+    df_word_by_sentence
+}
+//pour la médiane de mot moyen par phrase
+def calculate_median_word_count_per_sentence(df: DataFrame, columnName: String): Integer = {
+    val df_sentence = df.withColumn("sentences", explode(sentence_tokenizerUDF(col(columnName))))
+    val df_word = df_sentence.withColumn("word_count", count_wordsUDF(col("sentences")))
+    val median_word_by_sentence = df_word
+      .selectExpr("percentile_approx(word_count, 0.5) as median")
+      .head().getAs[Integer]("median")
+    median_word_by_sentence
+}
 
 
 }

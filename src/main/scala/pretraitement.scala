@@ -9,7 +9,8 @@ object  Pretraitement {
     def clean_file(spark: org.apache.spark.sql.SparkSession, file_path:  String ) :org.apache.spark.sql.DataFrame   = {
     val file = spark.sparkContext.textFile(file_path)
     //val text_in_single_row = file.reduce(_ + " " + _)
-    val text_in_single_row = file.take(1000).reduce(_ + " " + _)
+    //pour les test ne lire que les X lignes du fichier
+    val text_in_single_row = file.take(5000).reduce(_ + " " + _)
     // on formatte le contenu du fichier
     val text_cleaned = text_in_single_row
       // on convertit tous en minuscule 
