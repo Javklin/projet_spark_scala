@@ -1,6 +1,7 @@
 import org.apache.spark.sql.SparkSession
 import pretraitement._
 import analyse._
+import Visualisation._
 import org.apache.spark.sql.DataFrame 
 import org.apache.spark.sql.functions._
 
@@ -18,6 +19,6 @@ object SimpleApp extends App {
     val (df_with_word_count, df_with_sentence_count, different_word_number_df, df_average_word_by_sentence)
     = Analyse.check_content(df_book_fuse)
     
-    
+
     spark.stop()
 }
