@@ -6,14 +6,6 @@ import org.apache.spark.sql.functions._
 //import breeze.numerics._
 import breeze.plot._
 import breeze.linalg.{DenseMatrix, DenseVector}
-// import plotly._, plotly.element._, plotly.layout._, plotly.Bar 
-// import org.plotly_scala._
-// import org.plotly_scala._
-// import plotly._
-// import plotly.element._
-// import plotly.layout._
-
-
 
 object  Visualisation {
     def display_word_count(df: org.apache.spark.sql.DataFrame)  = {
@@ -24,8 +16,8 @@ object  Visualisation {
      val f = Figure()
      val p = f.subplot(0)
      p += plot(DenseVector(books.indices.map(_.toDouble).toArray), count_matrix(::, 0))
-     p.xlabel = "Books"
-     p.ylabel = "Word Counts"
+     p.xlabel = "Livres"
+     p.ylabel = "Nombre de mot"
      p.title = "Evolution du nombre de mot dans les livres"
      f.saveas("word_count_graph.png")
     }

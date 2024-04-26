@@ -4,6 +4,7 @@ import analyse._
 import Visualisation._
 import org.apache.spark.sql.DataFrame 
 import org.apache.spark.sql.functions._
+import org.apache.log4j.{Level, Logger}
 
 object SimpleApp extends App {
     val spark = SparkSession.builder.appName("Simple Application").master("local[*]").getOrCreate()
