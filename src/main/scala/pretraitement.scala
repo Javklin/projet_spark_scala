@@ -4,7 +4,6 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 
 object  Pretraitement {
-
     // normalise un fichier et créer un dataframe qui contient sur chaque ligne le contenu d'un livre 
     def clean_file(spark: org.apache.spark.sql.SparkSession, file_path:  String ) :org.apache.spark.sql.DataFrame   = {
     val file = spark.sparkContext.textFile(file_path)
@@ -30,7 +29,7 @@ object  Pretraitement {
     //TODO supprimer les valeurs vides du dataframe fait
     val df_book = spark.createDataFrame(text_split.map(Tuple1.apply)).toDF("book").na.drop()
     //df_book.collect.foreach(println) // pour afficher chaque ligne du dataframe 
-    return df_book
+    return df_book.filter(trim(col("book")) =!= "")
   }
 
 }

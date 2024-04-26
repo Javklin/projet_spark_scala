@@ -15,4 +15,7 @@ libraryDependencies += sparkcore
 libraryDependencies += sparksql
 libraryDependencies +=  hadoopclient
 
+// libraryDependencies += "org.plotly-scala" %% "plotly-render" % "0.8.2"
+libraryDependencies += "org.scalanlp" %% "breeze-viz" % "1.1"
+
 fork := true

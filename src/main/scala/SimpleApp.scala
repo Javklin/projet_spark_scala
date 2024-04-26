@@ -19,6 +19,8 @@ object SimpleApp extends App {
     val (df_with_word_count, df_with_sentence_count, different_word_number_df, df_average_word_by_sentence)
     = Analyse.check_content(df_book_fuse)
     
+    //On visualise les info en sauvegardant les graph dans des fichiers
+    Visualisation.display_word_count(df_with_word_count)
 
     spark.stop()
 }
