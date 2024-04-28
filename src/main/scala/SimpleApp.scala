@@ -1,10 +1,10 @@
 import org.apache.spark.sql.SparkSession
 import pretraitement._
 import analyse._
-import Visualisation._
+import Visualisation_breeze._
 import org.apache.spark.sql.DataFrame 
 import org.apache.spark.sql.functions._
-import org.apache.log4j.{Level, Logger}
+
 
 object SimpleApp extends App {
     val spark = SparkSession.builder.appName("Simple Application").master("local[*]").getOrCreate()
@@ -21,7 +21,11 @@ object SimpleApp extends App {
     = Analyse.check_content(df_book_fuse)
     
     //On visualise les info en sauvegardant les graph dans des fichiers
-    Visualisation.display_word_count(df_with_word_count)
+    Visualisation_breeze.display_word_count(df_with_word_count)
+    Visualisation_breeze.display_sentence_count(df_with_sentence_count)
+    Visualisation_breeze.display_word_and_sentence_count(df_with_word_count, df_with_sentence_count)
+    Visualisation_ploty.display_occurence_word(different_word_number_df)
+    different_word_number_df.printSchema()
 
     spark.stop()
 }

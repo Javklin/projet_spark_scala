@@ -2,12 +2,11 @@ package analyse
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame 
 import org.apache.spark.sql.functions._
-//import breeze.linalg._
-//import breeze.numerics._
+
+object  Visualisation_breeze {
 import breeze.plot._
 import breeze.linalg.{DenseMatrix, DenseVector}
-
-object  Visualisation {
+    //pour voir l'évolution du nombre de mot dans chaque livre
     def display_word_count(df: org.apache.spark.sql.DataFrame)  = {
      val aggregated_data = df.groupBy("book").agg(Map("word_count" -> "sum"))
      val word_count = aggregated_data.select(col("sum(word_count)")).collect().map(_.getLong(0))
@@ -21,5 +20,84 @@ object  Visualisation {
      p.title = "Evolution du nombre de mot dans les livres"
      f.saveas("word_count_graph.png")
     }
+
+    //pour voir l'évolution du nombre de phrase dans chaque livre
+    def display_sentence_count(df: org.apache.spark.sql.DataFrame)  = {
+     val aggregated_data = df.groupBy("book").agg(Map("sentence_count" -> "sum"))
+     val sentence_count = aggregated_data.select(col("sum(sentence_count)")).collect().map(_.getLong(0))
+     val books = aggregated_data.select(col("book").cast("string")).rdd.map(_.getString(0)).collect()
+     val count_matrix= new DenseMatrix(rows = sentence_count.length, cols = 1, data = sentence_count.map(_.toDouble))
+     val f = Figure()
+     val p = f.subplot(0)
+     p += plot(DenseVector(books.indices.map(_.toDouble).toArray), count_matrix(::, 0))
+     p.xlabel = "Livres"
+     p.ylabel = "Nombre de phrase"
+     p.title = "Evolution du nombre de phrase dans les livres"
+     f.saveas("sentence_count_graph.png")
+    }
+    
+    //pour voir l'évolution du nombre de phrase et de mot dans chaque livre
+    def display_word_and_sentence_count(wordDF: DataFrame, sentenceDF: DataFrame): Unit = {
+      val word_aggregated_data = wordDF.groupBy("book").agg(Map("word_count" -> "sum"))
+      val sentence_aggregated_data = sentenceDF.groupBy("book").agg(Map("sentence_count" -> "sum"))
+      
+      val word_counts = word_aggregated_data.select(col("sum(word_count)").alias("word_count"))
+        .collect().map(_.getLong(0))
+      val sentence_counts = sentence_aggregated_data.select(col("sum(sentence_count)").alias("sentence_count"))
+        .collect().map(_.getLong(0))
+      val books = word_aggregated_data.select(col("book").cast("string")).rdd.map(_.getString(0)).collect()
+
+      val f = Figure()
+      val p = f.subplot(0)
+      p += plot(DenseVector(books.indices.map(_.toDouble).toArray), DenseVector(word_counts.map(_.toDouble)), name = "Nombre de mot")
+      p += plot(DenseVector(books.indices.map(_.toDouble).toArray), DenseVector(sentence_counts.map(_.toDouble)), name = "Nombre de phrase")
+      p.xlabel = "Livres"
+      p.ylabel = "Nombre"
+      p.title = "Evolution du nombre de mot et de phrase dans les livres"
+      p.legend = true
+
+      f.saveas("word_and_sentence_count_graph.png")
+    }
+
+
+}
+
+object  Visualisation_ploty {
+//on utilise ploty car la version de breeze utiliséee ne permet pas l'affichage de chaine de caractère
+//code fait à partir de l'exmemple sur https://zwild.github.io/posts/plotly-examples-for-scala/
+import plotly._, element._, layout._, Plotly._
+    //pour voir le nombre de chaque mot dans les livres
+    def display_occurence_word(df: org.apache.spark.sql.DataFrame)  = {
+      val books = df.select("word").rdd.map(_.getString(0)).collect().toList
+      val counts1 = df.select("count").rdd.map(_.getLong(0)).collect().toList
+      val trace1 = Bar(
+        books,
+        counts1,
+        name = "Book Counts",
+        text = books.map(_ + "!"),
+        marker = Marker(
+          color = Color.RGB(49, 130, 189),
+          opacity = 0.7)
+      )
+      val layout = Layout(
+        title = "Book Counts",
+        xaxis = Axis(title = "Books"),
+        yaxis = Axis(title = "Counts")
+      )
+      Seq(trace1).plot(
+        "word_count.html",
+        Layout(
+          title = "Nombre d occurrence de chaque mot",
+          xaxis = Axis(tickangle = -45),
+          yaxis = Axis(
+            title = "",
+            titlefont = Font(size = 20, color = Color.RGB(107, 107, 107))),
+          barmode = BarMode.Group,
+          bargroupgap = 0.1),
+        false,
+        true,
+        true
+      )
+    }    
 
 }

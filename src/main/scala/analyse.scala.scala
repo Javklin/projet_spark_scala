@@ -2,6 +2,8 @@ package analyse
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame 
 import org.apache.spark.sql.functions._
+import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
+import org.apache.spark.mllib.linalg.Vectors
 
 object  Analyse {
 
@@ -55,7 +57,7 @@ org.apache.spark.sql.DataFrame)
     return (
     df_with_word_count,
     df_with_sentence_count,
-    different_word_number_df,
+    distinct_word_count_df,
     df_average_word_by_sentence)
 }
 
@@ -80,5 +82,9 @@ def calculate_median_word_count_per_sentence(df: DataFrame, columnName: String):
     median_word_by_sentence
 }
 
+//TODO pour afficher les sujets principaux de chaque livre
+def get_topic(df: DataFrame) = {
+
+}
 
 }
