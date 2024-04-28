@@ -19,9 +19,6 @@ libraryDependencies +=  hadoopclient
 //pour la visualisation
 libraryDependencies += "org.plotly-scala" %% "plotly-render" % "0.5.4"
 libraryDependencies += "org.scalanlp" %% "breeze-viz" % "1.1"
-
-// libraryDependencies += "org.scalanlp" %% "breeze" % "2.1.0"
-// libraryDependencies += "org.scalanlp" %% "breeze-viz" % "2.1.0"
 //pour l'analyse de topic
 libraryDependencies += "org.apache.spark" %% "spark-mllib" % "3.3.0"
 fork := true

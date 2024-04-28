@@ -2,8 +2,9 @@ package analyse
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame 
 import org.apache.spark.sql.functions._
-import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
-import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.ml.clustering.LDA
+import org.apache.spark.ml.feature.{CountVectorizer, CountVectorizerModel, Tokenizer}
+import org.apache.spark.ml.{Pipeline, PipelineModel}
 
 object  Analyse {
 
@@ -82,9 +83,58 @@ def calculate_median_word_count_per_sentence(df: DataFrame, columnName: String):
     median_word_by_sentence
 }
 
-//TODO pour afficher les sujets principaux de chaque livre
-def get_topic(df: DataFrame) = {
-
+//pour la répartition des sujets de chaque livre
+// exemple https://spark.apache.org/docs/latest/ml-clustering.html
+def get_topic(df: DataFrame, numTopics: Int): DataFrame = {
+  val tokenizer = new Tokenizer().setInputCol("book").setOutputCol("words")
+  val countVectorizer = new CountVectorizer()
+    .setInputCol("words")
+    .setOutputCol("features")
+    .setVocabSize(5000) 
+    .setMinDF(2) 
+  val lda = new LDA()
+    .setK(numTopics)
+    .setMaxIter(10)
+    .setFeaturesCol("features")
+  val pipeline = new Pipeline().setStages(Array(tokenizer, countVectorizer, lda))
+  val model = pipeline.fit(df)
+  val topicsData = model.transform(df)
+  topicsData.select("book", "topicDistribution")
 }
+
+def guessTopic(df: DataFrame, bookColumn: String): DataFrame = {
+    val genres_keywords = Map(
+        "Fantasy" -> Seq("magic", "wizard", "fantasy", "dragon"),
+        "Mystery" -> Seq("detective", "crime", "murder", "mystery"),
+        "Romance" -> Seq("love", "romance", "heartbreak"),
+        "Science Fiction" -> Seq("space", "alien", "robot", "future"),
+        "Thriller" -> Seq("suspense", "thriller", "danger", "tension"),
+        "Horror" -> Seq("horror", "scary", "fear", "haunted"),
+        "Historical Fiction" -> Seq("historical", "era", "past", "period"),
+        "Adventure" -> Seq("adventure", "journey", "quest", "explore"),
+        "Poetry" -> Seq("poem", "verse", "rhyme", "stanza"),
+        "Drama" -> Seq("drama", "theater", "stage", "act"),
+        "Biography" -> Seq("biography", "life", "autobiography", "memoir"),
+        "Autobiography" -> Seq("autobiography", "life story", "memoir", "journey"),
+        "Self-Help" -> Seq("self-help", "improve", "personal growth", "success"),
+        "Philosophy" -> Seq("philosophy", "thought", "theory", "belief"),
+        "Business" -> Seq("business", "management", "entrepreneurship", "leadership"),
+        "Travel" -> Seq("travel", "journey", "explore", "destination"),
+        "Cooking" -> Seq("cooking", "recipe", "chef", "cuisine"),
+        "Art" -> Seq("art", "painting", "sculpture", "visual art"),
+        "Music" -> Seq("music", "musical", "instrument", "melody"),
+        "Spirituality" -> Seq("spirituality", "religion", "faith", "belief")
+    )
+
+    def guess_book_topic(bookText: String): String = {
+        val guessed_topic = genres_keywords.find { case (topic, keywords) =>
+            keywords.exists(keyword => bookText.toLowerCase.contains(keyword))
+        }
+        guessed_topic.map(_._1).getOrElse("Unknown") 
+    }
+    val guess_book_topicUDF = udf((bookText: String) => guess_book_topic(bookText))
+    return df.withColumn("topic", guess_book_topicUDF(col(bookColumn)))
+}
+
 
 }
