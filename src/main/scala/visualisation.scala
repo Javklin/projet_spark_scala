@@ -19,7 +19,7 @@ import breeze.linalg.{DenseMatrix, DenseVector}
      p.xlabel = "Livres"
      p.ylabel = "Nombre de mot"
      p.title = "Evolution du nombre de mot dans les livres"
-     f.saveas("word_count_graph.png")
+     f.saveas("./visualisation/word_count_graph.png")
     }
 
     //pour voir l'évolution du nombre de phrase dans chaque livre
@@ -34,7 +34,7 @@ import breeze.linalg.{DenseMatrix, DenseVector}
      p.xlabel = "Livres"
      p.ylabel = "Nombre de phrase"
      p.title = "Evolution du nombre de phrase dans les livres"
-     f.saveas("sentence_count_graph.png")
+     f.saveas("./visualisation/sentence_count_graph.png")
     }
     
     //pour voir l'évolution du nombre de phrase et de mot dans chaque livre
@@ -54,7 +54,7 @@ import breeze.linalg.{DenseMatrix, DenseVector}
       p.ylabel = "Nombre"
       p.title = "Evolution du nombre de mot et de phrase dans les livres"
       p.legend = true
-      f.saveas("word_and_sentence_count_graph.png")
+      f.saveas("./visualisation/word_and_sentence_count_graph.png")
     }
 
     def displayTopicDistribution(df: org.apache.spark.sql.DataFrame) = {
@@ -69,7 +69,7 @@ import breeze.linalg.{DenseMatrix, DenseVector}
       p.xlabel = "Livres"
       p.ylabel = "Distribution de sujets"
       p.title = "Distribution des sujets par livre"
-      f.saveas("topic_distribution_graph.png")
+      f.saveas("./visualisation/topic_distribution_graph.png")
 }
 }
 
@@ -97,7 +97,7 @@ import org.apache.spark.ml.linalg.Vector
         yaxis = Axis(title = "Counts")
       )
       Seq(trace1).plot(
-        "word_count.html",
+        "./visualisation/word_count.html",
         Layout(
           title = "Nombre d occurrence de chaque mot",
           xaxis = Axis(tickangle = -45),
@@ -126,7 +126,7 @@ import org.apache.spark.ml.linalg.Vector
           opacity = 0.7)
       )
       Seq(trace1).plot(
-        "category_count.html",
+        "./visualisation/category_count.html",
         Layout(
           title = "Nombre de livres par categorie",
           xaxis = Axis(tickangle = -45),
