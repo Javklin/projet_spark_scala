@@ -21,7 +21,7 @@ org.apache.spark.sql.DataFrame)
   = {
     //nb de mot
     val df_with_word_count = df.withColumn("word_count", size(array_remove(split(col("book"), "\\s+"), "")))
-    df_with_word_count.show()
+    //df_with_word_count.show()
     val total_word_count = df_with_word_count.agg(sum("word_count")).collect()(0)(0)
    
     //nb de phrase 
@@ -29,7 +29,7 @@ org.apache.spark.sql.DataFrame)
     text.split("[.!?]").count(_.trim.nonEmpty)
     })
     val df_with_sentence_count = df.withColumn("sentence_count", count_sentence_udf(col("book")))
-    df_with_sentence_count.show()
+    //df_with_sentence_count.show()
     val totalSentenceCount = df_with_sentence_count.filter(trim(col("book")) =!= "").agg(sum("sentence_count")).collect()(0)(0)
    
     //nb de livre
@@ -39,7 +39,7 @@ org.apache.spark.sql.DataFrame)
     val words_df = df.withColumn("word", explode(split(col("book"), "\\s+")))
     .withColumn("word", regexp_replace(col("word"), "[\\.\\!\\?]", ""))
     val distinct_word_count_df = words_df.filter(trim(col("word")) =!= "").groupBy("word").count()
-    distinct_word_count_df.show()
+    //distinct_word_count_df.show()
     val different_word_number_df = distinct_word_count_df.agg(sum("count").alias("total_count"))
     val different_word_number = distinct_word_count_df.count()
 

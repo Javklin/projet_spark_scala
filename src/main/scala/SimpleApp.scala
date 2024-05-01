@@ -17,7 +17,7 @@ object SimpleApp extends App {
     //On récupère les DF à visualiser
     val (df_with_word_count, df_with_sentence_count, different_word_number_df, df_average_word_by_sentence)
     = Analyse.check_content(df_book_fuse)
-    /*
+    
     //On visualise les info en sauvegardant les graphes dans des fichiers
     Visualisation_breeze.display_word_count(df_with_word_count)
     Visualisation_breeze.display_sentence_count(df_with_sentence_count)
@@ -40,7 +40,5 @@ object SimpleApp extends App {
     //On visualise la répartition de sujet dans chaque livre
     Visualisation_breeze.displayTopicDistribution(topic_distribution_df)
 
-
-    */
     spark.stop()
 }

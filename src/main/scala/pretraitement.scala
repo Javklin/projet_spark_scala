@@ -9,7 +9,7 @@ object  Pretraitement {
     val file = spark.sparkContext.textFile(file_path)
     //On lit que les X lignes premières lignes du fichier 
     val text_in_single_row = file
-    .take(20000)
+    .take(80000)
     .reduce(_ + " " + _)
     // on formatte le contenu du fichier
     val text_cleaned = text_in_single_row
